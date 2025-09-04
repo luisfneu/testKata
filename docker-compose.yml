@@ -1,0 +1,61 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: dungeon-postgres
+    environment:
+      POSTGRES_DB: dungeon_solver
+      POSTGRES_USER: dungeon_user
+      POSTGRES_PASSWORD: dungeon_pass
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dungeon_user -d dungeon_solver"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - dungeon-network
+
+  dungeon-solver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dungeon-solver-app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/dungeon_solver
+      - SPRING_DATASOURCE_USERNAME=dungeon_user
+      - SPRING_DATASOURCE_PASSWORD=dungeon_pass
+      - JAVA_OPTS=-Xmx512m -Xms256m
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/api/dungeon/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - dungeon-network
+
+volumes:
+  logs:
+    driver: local
+  postgres_data:
+    driver: local
+
+networks:
+  dungeon-network:
+    driver: bridge

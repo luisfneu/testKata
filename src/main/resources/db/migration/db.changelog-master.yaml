@@ -1,0 +1,3 @@
+databaseChangeLog:
+  - include:
+      file: db/migration/V1__Create_dungeon_solutions_table.yaml

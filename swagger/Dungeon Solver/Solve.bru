@@ -1,0 +1,22 @@
+meta {
+  name: Solve
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/api/dungeon/solve
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "input": [
+      [-2, -3, 3],
+      [-5, -10, 1],
+      [10, 30, -5]
+    ]
+  }
+  
+}
