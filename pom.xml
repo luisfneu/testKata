@@ -26,7 +26,9 @@
         <maven.compiler.release>23</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <springdoc.version>2.6.0</springdoc.version>
-        <jacoco.version>0.8.11</jacoco.version>
+        <jacoco.version>0.8.12</jacoco.version>
+        <pitest.version>1.16.3</pitest.version>
+        <pitest-junit5-plugin.version>1.2.1</pitest-junit5-plugin.version>
     </properties>
 
     <dependencies>
@@ -115,6 +117,12 @@
             <artifactId>jqf-maven-plugin</artifactId>
             <version>2.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -136,9 +144,6 @@
                 <version>3.13.0</version>
                 <configuration>
                     <release>23</release>
-                    <compilerArgs>
-                        <arg>--enable-preview</arg>
-                    </compilerArgs>
                     <forceJavacCompilerUse>true</forceJavacCompilerUse>
                 </configuration>
             </plugin>
@@ -147,9 +152,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
-                <configuration>
-                    <argLine>--enable-preview</argLine>
-                </configuration>
             </plugin>
 
             <plugin>
@@ -170,6 +172,54 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>${pitest.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>${pitest-junit5-plugin.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <targetClasses>
+                        <param>com.dungeon.solver.*</param>
+                        <param>com.dungeon.service.*</param>
+                        <param>com.dungeon.model.*</param>
+                    </targetClasses>
+                    <targetTests>
+                        <param>com.dungeon.solver.*</param>
+                        <param>com.dungeon.model.*</param>
+                    </targetTests>
+                    <excludedClasses>
+                        <param>com.dungeon.*IntegrationTest</param>
+                        <param>com.dungeon.repository.*</param>
+                        <param>com.dungeon.controller.*</param>
+                        <param>com.dungeon.DungeonSolverApplication</param>
+                        <param>com.dungeon.config.*</param>
+                        <param>com.dungeon.entity.*</param>
+                    </excludedClasses>
+                    <excludedTestClasses>
+                        <param>**/*IntegrationTest</param>
+                        <param>**/repository/*</param>
+                        <param>**/controller/*</param>
+                        <param>**/service/DungeonCacheServiceTest</param>
+                    </excludedTestClasses>
+                    <threads>4</threads>
+                    <outputFormats>
+                        <outputFormat>XML</outputFormat>
+                        <outputFormat>HTML</outputFormat>
+                    </outputFormats>
+                    <timestampedReports>false</timestampedReports>
+                    <mutators>
+                        <mutator>DEFAULTS</mutator>
+                    </mutators>
+                    <verbose>true</verbose>
+                </configuration>
             </plugin>
         </plugins>
     </build>
