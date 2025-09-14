@@ -37,7 +37,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
@@ -64,7 +64,7 @@
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
         </dependency>
-        
+
         <!-- Bouncy Castle for Blake3 Hashing -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
@@ -110,12 +110,14 @@
             <groupId>edu.berkeley.cs.jqf</groupId>
             <artifactId>jqf-fuzz</artifactId>
             <version>2.1</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>edu.berkeley.cs.jqf</groupId>
             <artifactId>jqf-maven-plugin</artifactId>
             <version>2.1</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

@@ -546,3 +546,44 @@ Grid:  [[-3,  5],
 - **⚡ Performance**: Optimized indexes for fast lookups and path reconstruction
 - **🔧 Maintainability**: Clear separation of concerns with normalized relationships
 - **💾 Storage Efficiency**: No redundant path encoding - direct cell references
+
+## 🧪 Mutation Testing with PITest
+
+### Overview
+
+This project incorporates mutation testing using PITest to provide advanced test quality metrics beyond traditional code coverage. Mutation testing validates the effectiveness of our test suite by introducing small code changes (mutations) and verifying that tests detect these changes.
+
+### 🎯 What is Mutation Testing?
+
+Mutation testing is a technique that:
+
+- Introduces small code changes (mutations) like changing > to >=, + to -, or removing method calls
+- Runs the test suite against each mutation
+- Measures test quality by counting how many mutations are "killed" (detected by failing tests)
+- Identifies weak spots in testing where mutations survive undetected
+
+### How to Run
+
+```bash
+# Basic mutation testing command
+mvn org.pitest:pitest-maven:mutationCoverage
+
+# Full clean build with mutation testing
+mvn clean compile test-compile
+mvn org.pitest:pitest-maven:mutationCoverage
+```
+
+You can find the report at `target/pit-reports/`
+
+## **Fuzz Testing with JQF**
+- Uses JQF (Zest guidance) to generate inputs that explore tricky paths in parsing, validation, and the DP solver.
+- Runs fully in-process; no external HTTP server is required.
+
+### **Available Fuzzers**
+**Matrix:**
+
+This fuzzer calls the running API at `http://localhost:8080/api/dungeon/solve`.
+The test builds JSON as `{ "input": <fuzzed_string> }`; many inputs will be invalid, which is expected.
+  - `com.dungeon.MatrixFuzzTest#fuzzMatrixInput`
+  - How to run?
+    - `mvn jqf:fuzz -Dclass=com.dungeon.MatrixFuzzTest -Dmethod=fuzzMatrixInput -Dtime=60s`
